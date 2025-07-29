@@ -1,0 +1,4 @@
+vendor/**
+# Ignore all files in the vendor directory
+
+.DS_Store
