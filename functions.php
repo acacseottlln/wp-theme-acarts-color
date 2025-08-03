@@ -296,6 +296,7 @@ function custom_latest_posts_render($block_content, $block)
 		return $block_content;
 	}
 
+	$attributes = array();
 	if (array_key_exists('attrs', $block) && is_array($block['attrs'])) {
 		$attributes = $block['attrs'];
 	}
@@ -310,7 +311,7 @@ function custom_latest_posts_render($block_content, $block)
 		'suppress_filters' => false,
 	);
 
-	$block_core_latest_posts_excerpt_length = $attributes['excerptLength'];
+	$block_core_latest_posts_excerpt_length = $attributes['excerptLength'] ?? 55;
 	add_filter('excerpt_length', 'block_core_latest_posts_get_excerpt_length', 20);
 
 	if (isset($attributes['categories'])) {
@@ -392,11 +393,24 @@ function custom_latest_posts_render($block_content, $block)
 		$class .= ' has-author';
 	}
 
-	$wrapper_attributes = get_block_wrapper_attributes(array('class' => $class));
+	$class = 'wp-block-latest-posts__list';
+
+	if (isset($attributes['postLayout']) && 'grid' === $attributes['postLayout']) {
+		$class .= ' is-grid';
+	}
+	if (isset($attributes['columns']) && 'grid' === $attributes['postLayout']) {
+		$class .= ' columns-' . intval($attributes['columns']);
+	}
+	if (!empty($attributes['displayPostDate'])) {
+		$class .= ' has-dates';
+	}
+	if (!empty($attributes['displayAuthor'])) {
+		$class .= ' has-author';
+	}
 
 	return sprintf(
-		'<ul %1$s>%2$s</ul>',
-		$wrapper_attributes,
+		'<ul class="%1$s">%2$s</ul>',
+		esc_attr($class),
 		$list_items_markup
 	);
 }
